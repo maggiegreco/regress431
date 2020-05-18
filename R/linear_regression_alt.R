@@ -9,8 +9,9 @@
 #' @import dplyr
 #'
 #' @export
+#'
 slr_gd <- function(dat, response, explanatory){
-  iters <- 200000
+  iters <- 2
   betas <- matrix(c(28, .05))
 
   x <- dat %>% select({{explanatory}})
@@ -58,7 +59,7 @@ slr_gd <- function(dat, response, explanatory){
 #'@export
 mlr_gd <- function(dat, response){
 
-  iters <- 200000
+  iters <- 2
   betas <- matrix(c(30, 0, 2))
 
   x <- dat %>% select(-{{response}})
@@ -105,6 +106,15 @@ mlr_gd <- function(dat, response){
 #'
 #'@export
 mlr_qr <- function(dat, response) {
+  x <- dat %>% select(-{{response}})
+  x <- data.frame(cbind(intercept = 1, x))
+  namesx <- names(x)
+  x <- as.matrix(x)
+  y <- dat %>% select({{response}})
 
+  decomp <- qr(x)
+  betas <- solve.qr(decomp, y)
+  results <- as.data.frame(t(betas))
+  names(results) <- names(x)
   return(results)
 }
