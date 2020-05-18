@@ -4,34 +4,36 @@
 #' @param response The name of a response variable in the data frame (unquoted)
 #' @param explanatory The name of the explanatory variable in the data frame (unquoted)
 #'
-#' @return A data f
+#' @return A data frame
 #'
 #' @import dplyr
 #'
 #' @export
 slr_gd <- function(dat, response, explanatory){
-  iters <- 2000000
-  betas <- matrix(0, 2)
+  iters <- 200000
+  betas <- matrix(c(28, .05))
 
   x <- dat %>% select({{explanatory}})
-  x <- as.matrix(cbind(intercept = 1, x))
+  x <- data.frame(cbind(intercept = 1, x))
+  namesx <- names(x)
+  x <- as.matrix(x)
   y <- dat %>% select({{response}})
 
   for(i in (1:iters)){
 
-    if (i %% 1000 == 1) {print(betas)}
+
     pred <- x %*% betas
     error <- (1/nrow(x))*sum((y-pred)^2)
 
     deriv_b1 <- (-2/nrow(x))*sum(x[,2]*(y - pred))
     deriv_int <-  (-2/nrow(x))*sum((y - pred))
 
-    betas[1] <- (betas[1] - .000001*deriv_int)
-    betas[2] <- (betas[2] - .000001*deriv_b1)
+    betas[1] <- (betas[1] - .00001*deriv_int)
+    betas[2] <- (betas[2] - .00001*deriv_b1)
   }
 
   betas <- data.frame(t(betas))
-  names(betas) <- names(x)
+  names(betas) <- namesx
   results <- betas
   return(results)
 }
@@ -56,16 +58,17 @@ slr_gd <- function(dat, response, explanatory){
 #'@export
 mlr_gd <- function(dat, response){
 
-  iters <- 2000000
-  betas <- matrix(0, 2)
+  iters <- 200000
+  betas <- matrix(c(30, 0, 2))
 
-  x <- dat %>% select({{explanatory}})
-  x <- as.matrix(cbind(intercept = 1, x))
+  x <- dat %>% select(-{{response}})
+  x <- data.frame(cbind(intercept = 1, x))
+  namesx <- names(x)
+  x <- as.matrix(x)
   y <- dat %>% select({{response}})
 
   for(i in (1:iters)){
 
-    if (i %% 1000 == 1) {print(betas)}
     pred <- x %*% betas
     error <- (1/nrow(x))*sum((y-pred)^2)
 
@@ -78,12 +81,12 @@ mlr_gd <- function(dat, response){
 
 
   betas <- data.frame(t(betas))
-  names(betas) <- names(x)
+  names(betas) <- namesx
   results <- data.frame(betas)
   return(results)
 
 }
-
+}
 #' Implements linear regression with many predictors by matrix decomposition
 #'
 #' This function computes coefficients for multiple regression by QR matrix decomposition
@@ -103,11 +106,5 @@ mlr_gd <- function(dat, response){
 #'@export
 mlr_qr <- function(dat, response) {
 
-
-
-  ### Compute coefficients by QR decomposition
-  ### Return a data frame of the same form as in the `multiple_linear_regression`
-
   return(results)
-
 }
