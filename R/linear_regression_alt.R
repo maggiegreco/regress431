@@ -4,13 +4,13 @@
 #' @param response The name of a response variable in the data frame (unquoted)
 #' @param explanatory The name of the explanatory variable in the data frame (unquoted)
 #'
-#' @return A data frame of coefficients
+#' @return A data f
 #'
 #' @import dplyr
 #'
 #' @export
 slr_gd <- function(dat, response, explanatory){
-  iters <- 10000
+  iters <- 2000000
   betas <- matrix(0, 2)
 
   x <- dat %>% select({{explanatory}})
@@ -26,8 +26,8 @@ slr_gd <- function(dat, response, explanatory){
     deriv_b1 <- (-2/nrow(x))*sum(x[,2]*(y - pred))
     deriv_int <-  (-2/nrow(x))*sum((y - pred))
 
-    betas[1] <- (betas[1] - .0001*deriv_int)
-    betas[2] <- (betas[2] - .0001*deriv_b1)
+    betas[1] <- (betas[1] - .000001*deriv_int)
+    betas[2] <- (betas[2] - .000001*deriv_b1)
   }
 
   betas <- data.frame(t(betas))
@@ -56,7 +56,7 @@ slr_gd <- function(dat, response, explanatory){
 #'@export
 mlr_gd <- function(dat, response){
 
-  iters <- 10000
+  iters <- 2000000
   betas <- matrix(0, 2)
 
   x <- dat %>% select({{explanatory}})
@@ -72,8 +72,8 @@ mlr_gd <- function(dat, response){
     deriv_b1 <- (-2/nrow(x))*sum(x[,2]*(y - pred))
     deriv_int <-  (-2/nrow(x))*sum((y - pred))
     for(i in (1:iters)){
-    betas[1] <- (betas[1] - .0001*deriv_int)
-    betas[2] <- (betas[2] - .0001*deriv_b1)
+    betas[1] <- (betas[1] - .000001*deriv_int)
+    betas[2] <- (betas[2] - .000001*deriv_b1)
     }
 
 
